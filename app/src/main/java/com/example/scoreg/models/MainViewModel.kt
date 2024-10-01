@@ -116,9 +116,12 @@ class MainViewModel : ViewModel() {
             userRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     // Atualiza as listas do usuário logado
-                    val completedGamesList = dataSnapshot.child("completedGames").children.mapNotNull { it.key }
-                    val playingNowList = dataSnapshot.child("playingNow").children.mapNotNull { it.key }
-                    val wishListGamesList = dataSnapshot.child("wishList").children.mapNotNull { it.key }
+                    val completedGamesList =
+                        dataSnapshot.child("completedGames").children.mapNotNull { it.key }
+                    val playingNowList =
+                        dataSnapshot.child("playingNow").children.mapNotNull { it.key }
+                    val wishListGamesList =
+                        dataSnapshot.child("wishList").children.mapNotNull { it.key }
 
                     // Atualiza as variáveis observáveis
                     completedGames.value = completedGamesList
@@ -138,14 +141,14 @@ class MainViewModel : ViewModel() {
 
     // Função para verificar em qual lista o currentGame está e atualizar o estado apropriado
     private fun updateCurrentGameListBasedOnUserLists(gameId: String) {
-        when {
-            gameId in completedGames.value -> {
+        when (gameId) {
+            in completedGames.value -> {
                 currentGameList.value = "completedGames"
             }
-            gameId in playingNow.value -> {
+            in playingNow.value -> {
                 currentGameList.value = "playingNow"
             }
-            gameId in wishList.value -> {
+            in wishList.value -> {
                 currentGameList.value = "wishList"
             }
             else -> {
@@ -155,12 +158,7 @@ class MainViewModel : ViewModel() {
     }
 
     // Variável que representa a lista atual onde o jogo está
-    var currentGameList = mutableStateOf<String>("")
-
-
-
-
-
+    var currentGameList = mutableStateOf("")
 
     fun searchGamesByTitle(query: String, callback: (List<Game>) -> Unit) {
         val gamesRef = getDatabaseReference("games")
@@ -229,14 +227,16 @@ class MainViewModel : ViewModel() {
                             }
                         }
 
-                        if (listName == "completedGames") {
-                            currentUserCompletedGamesList.value = completedGamesListTemp
-                        }
-                        else if (listName == "playingNow") {
-                            currentUserPlayingNowList.value = completedGamesListTemp
-                        }
-                        else if (listName == "wishList") {
-                            currentUserWishList.value = completedGamesListTemp
+                        when (listName) {
+                            "completedGames" -> {
+                                currentUserCompletedGamesList.value = completedGamesListTemp
+                            }
+                            "playingNow" -> {
+                                currentUserPlayingNowList.value = completedGamesListTemp
+                            }
+                            "wishList" -> {
+                                currentUserWishList.value = completedGamesListTemp
+                            }
                         }
 
                     }
@@ -249,63 +249,6 @@ class MainViewModel : ViewModel() {
 
             override fun onCancelled(databaseError: DatabaseError) {
                 // Lida com erros, se necessário
-            }
-        })
-    }
-
-    private fun convertListNameToFBRefName(listName: String): String {
-        val listNamePretty = when (listName) {
-            "completedGames" -> "Jogos Completados"
-            "playingNow" -> "Jogando Agora"
-            "wishList" -> "Lista de Compras"
-            else -> "Tem isso não!"
-        }
-
-        return listNamePretty
-
-    }
-
-    // Função conferir se o jogo faz parte de alguma lista e adiciona o ID do jogo na lista de jogos do usuário logado
-    fun addGameToCurrentUserListWithCheck(listName: String, callback: (String) -> Unit) {
-        val userId = getCurrentUserId()
-        val userRef = getDatabaseReference("users/$userId")
-        val listNamePretty = convertListNameToFBRefName(listName)
-
-        // Listener para pegar todas as listas de jogos do usuário
-        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val completedGames = dataSnapshot.child("completedGames").children.mapNotNull { it.key }
-                val playingNow = dataSnapshot.child("playingNow").children.mapNotNull { it.key }
-                val wishList = dataSnapshot.child("wishList").children.mapNotNull { it.key }
-
-                // Verifica se o jogo já pertence a alguma lista
-                when (currentGame.id) {
-                    in completedGames -> {
-                        callback("O jogo já está na lista 'Jogos Completados'")
-                    }
-                    in playingNow -> {
-                        callback("O jogo já está na lista 'Jogando Agora'")
-                    }
-                    in wishList -> {
-                        callback("O jogo já está na 'Lista de Compras'")
-                    }
-                    else -> {
-                        // Adiciona o jogo à lista especificada
-                        val userGameListRef: DatabaseReference = userRef.child(listName).child(currentGame.id)
-                        userGameListRef.setValue(true).addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                callback("Jogo adicionado com sucesso à lista $listNamePretty")
-                            } else {
-                                callback("Erro ao adicionar jogo à lista $listNamePretty")
-                            }
-                        }
-                    }
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Retorna erro
-                callback("Erro ao acessar o banco de dados")
             }
         })
     }
@@ -351,19 +294,17 @@ class MainViewModel : ViewModel() {
     }
 
 
-
-
-
-
     // Funções para adicionar e remover jogos
     fun addGameToList(listType: String, gameId: String) {
         when (listType) {
             "completedGames" -> {
                 completedGames.value = completedGames.value + gameId
             }
+
             "playingNow" -> {
                 playingNow.value = playingNow.value + gameId
             }
+
             "wishList" -> {
                 wishList.value = wishList.value + gameId
             }
@@ -375,9 +316,11 @@ class MainViewModel : ViewModel() {
             "completedGames" -> {
                 completedGames.value = completedGames.value.filter { it != gameId }
             }
+
             "playingNow" -> {
                 playingNow.value = playingNow.value.filter { it != gameId }
             }
+
             "wishList" -> {
                 wishList.value = wishList.value.filter { it != gameId }
             }

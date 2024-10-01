@@ -25,7 +25,6 @@ fun GameInfoPage(
     mainViewModel: MainViewModel,
 ) {
     val activity = LocalContext.current as? Activity
-    val currentGameList = mainViewModel.currentGameList.value // Obtemos o estado da lista atual do jogo
 
     val gameId = mainViewModel.currentGame.id // Pegue o ID do jogo atual
 
@@ -70,18 +69,31 @@ fun GameInfoPage(
                     if (isCompleted) {
                         mainViewModel.removeGameToCurrentUserList("completedGames")
                         mainViewModel.removeGameFromList("completedGames", gameId)
-                        Toast.makeText(activity, "Jogo removido da lista 'Jogos Completados'.", Toast.LENGTH_SHORT).show()
-                    }
-                    else if (isPlayingNow) {
-                        Toast.makeText(activity, "Remova o jogo da lista 'Jogando Agora' antes.", Toast.LENGTH_SHORT).show()
-                    }
-                    else if (isWishListed) {
-                        Toast.makeText(activity, "Remova o jogo da lista 'Lista de Compras' antes.", Toast.LENGTH_SHORT).show()
-                    }
-                    else {
+                        Toast.makeText(
+                            activity,
+                            "Jogo removido da lista 'Jogos Completados'.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else if (isPlayingNow) {
+                        Toast.makeText(
+                            activity,
+                            "Remova o jogo da lista 'Jogando Agora' antes.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else if (isWishListed) {
+                        Toast.makeText(
+                            activity,
+                            "Remova o jogo da lista 'Lista de Compras' antes.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
                         mainViewModel.addGameToCurrentUserList("completedGames")
                         mainViewModel.addGameToList("completedGames", gameId)
-                        Toast.makeText(activity, "Jogo adicionado à lista 'Jogos Completados'.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            activity,
+                            "Jogo adicionado à lista 'Jogos Completados'.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                 },
@@ -89,37 +101,63 @@ fun GameInfoPage(
                     if (isPlayingNow) {
                         mainViewModel.removeGameToCurrentUserList("playingNow")
                         mainViewModel.removeGameFromList("playingNow", gameId)
-                        Toast.makeText(activity, "Jogo removido da lista 'Jogando Agora'.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            activity,
+                            "Jogo removido da lista 'Jogando Agora'.",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
-                    }
-                    else if (isCompleted) {
-                        Toast.makeText(activity, "Remova o jogo da lista 'Jogos Completados' antes.", Toast.LENGTH_SHORT).show()
-                    }
-                    else if (isWishListed) {
-                        Toast.makeText(activity, "Remova o jogo da lista 'Lista de Compras' antes.", Toast.LENGTH_SHORT).show()
-                    }
-                    else {
+                    } else if (isCompleted) {
+                        Toast.makeText(
+                            activity,
+                            "Remova o jogo da lista 'Jogos Completados' antes.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else if (isWishListed) {
+                        Toast.makeText(
+                            activity,
+                            "Remova o jogo da lista 'Lista de Compras' antes.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
                         mainViewModel.addGameToCurrentUserList("playingNow")
                         mainViewModel.addGameToList("playingNow", gameId)
-                        Toast.makeText(activity, "Jogo adicionado à lista 'Jogando Agora'.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            activity,
+                            "Jogo adicionado à lista 'Jogando Agora'.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 },
                 onAddToWishlist = {
                     if (isWishListed) {
                         mainViewModel.removeGameToCurrentUserList("wishList")
                         mainViewModel.removeGameFromList("wishList", gameId)
-                        Toast.makeText(activity, "Jogo removido da lista 'Lista de Compras'.", Toast.LENGTH_SHORT).show()
-                    }
-                    else if (isCompleted) {
-                        Toast.makeText(activity, "Remova o jogo da lista 'Jogos Completados' antes.", Toast.LENGTH_SHORT).show()
-                    }
-                    else if (isPlayingNow) {
-                        Toast.makeText(activity, "Remova o jogo da lista 'Jogando Agora' antes.", Toast.LENGTH_SHORT).show()
-                    }
-                    else {
+                        Toast.makeText(
+                            activity,
+                            "Jogo removido da lista 'Lista de Compras'.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else if (isCompleted) {
+                        Toast.makeText(
+                            activity,
+                            "Remova o jogo da lista 'Jogos Completados' antes.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else if (isPlayingNow) {
+                        Toast.makeText(
+                            activity,
+                            "Remova o jogo da lista 'Jogando Agora' antes.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
                         mainViewModel.addGameToCurrentUserList("wishList")
                         mainViewModel.addGameToList("wishList", gameId)
-                        Toast.makeText(activity, "Jogo adicionado à lista 'Lista de compras'.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            activity,
+                            "Jogo adicionado à lista 'Lista de compras'.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 },
                 completedIcon = if (isCompleted) completedGamesRemoveIcon else completedGamesAddIcon,
@@ -132,17 +170,17 @@ fun GameInfoPage(
         }
 
         Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
 
-            ) {
-                GameListSection(
-                    title = "Mais Populares",
-                    games = mainViewModel.gamesSortedByScore.value.toList(),
-                    mainViewModel = mainViewModel,
-                    navController = navController
-                )
-            }
+        ) {
+            GameListSection(
+                title = "Mais Populares",
+                games = mainViewModel.gamesSortedByScore.value.toList(),
+                mainViewModel = mainViewModel,
+                navController = navController
+            )
         }
+    }
 }

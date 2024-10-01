@@ -52,10 +52,6 @@ fun GameInfoPage(
 
             GameView(game = mainViewModel.currentGame)
 
-            // Definindo as cores de texto
-            val green = Color(0xFF25F396)
-            val red = Color(0xFFFF0000)
-
             // Ícones de adicionar/remover para cada estado
             val completedGamesAddIcon = R.drawable.navbar_icon_completedgames_green
             val completedGamesRemoveIcon = R.drawable.navbar_icon_completedgames_red

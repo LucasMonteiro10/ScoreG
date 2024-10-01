@@ -7,10 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -74,27 +70,56 @@ fun GameInfoPage(
                     if (isCompleted) {
                         mainViewModel.removeGameToCurrentUserList("completedGames")
                         mainViewModel.removeGameFromList("completedGames", gameId)
-                    } else {
+                        Toast.makeText(activity, "Jogo removido da lista 'Jogos Completados'.", Toast.LENGTH_SHORT).show()
+                    }
+                    else if (isPlayingNow) {
+                        Toast.makeText(activity, "Remova o jogo da lista 'Jogando Agora' antes.", Toast.LENGTH_SHORT).show()
+                    }
+                    else if (isWishListed) {
+                        Toast.makeText(activity, "Remova o jogo da lista 'Lista de Compras' antes.", Toast.LENGTH_SHORT).show()
+                    }
+                    else {
                         mainViewModel.addGameToCurrentUserList("completedGames")
                         mainViewModel.addGameToList("completedGames", gameId)
+                        Toast.makeText(activity, "Jogo adicionado à lista 'Jogos Completados'.", Toast.LENGTH_SHORT).show()
                     }
+
                 },
                 onAddToPlaying = {
                     if (isPlayingNow) {
                         mainViewModel.removeGameToCurrentUserList("playingNow")
                         mainViewModel.removeGameFromList("playingNow", gameId)
-                    } else {
+                        Toast.makeText(activity, "Jogo removido da lista 'Jogando Agora'.", Toast.LENGTH_SHORT).show()
+
+                    }
+                    else if (isCompleted) {
+                        Toast.makeText(activity, "Remova o jogo da lista 'Jogos Completados' antes.", Toast.LENGTH_SHORT).show()
+                    }
+                    else if (isWishListed) {
+                        Toast.makeText(activity, "Remova o jogo da lista 'Lista de Compras' antes.", Toast.LENGTH_SHORT).show()
+                    }
+                    else {
                         mainViewModel.addGameToCurrentUserList("playingNow")
                         mainViewModel.addGameToList("playingNow", gameId)
+                        Toast.makeText(activity, "Jogo adicionado à lista 'Jogando Agora'.", Toast.LENGTH_SHORT).show()
                     }
                 },
                 onAddToWishlist = {
                     if (isWishListed) {
                         mainViewModel.removeGameToCurrentUserList("wishList")
                         mainViewModel.removeGameFromList("wishList", gameId)
-                    } else {
+                        Toast.makeText(activity, "Jogo removido da lista 'Lista de Compras'.", Toast.LENGTH_SHORT).show()
+                    }
+                    else if (isCompleted) {
+                        Toast.makeText(activity, "Remova o jogo da lista 'Jogos Completados' antes.", Toast.LENGTH_SHORT).show()
+                    }
+                    else if (isPlayingNow) {
+                        Toast.makeText(activity, "Remova o jogo da lista 'Jogando Agora' antes.", Toast.LENGTH_SHORT).show()
+                    }
+                    else {
                         mainViewModel.addGameToCurrentUserList("wishList")
                         mainViewModel.addGameToList("wishList", gameId)
+                        Toast.makeText(activity, "Jogo adicionado à lista 'Lista de compras'.", Toast.LENGTH_SHORT).show()
                     }
                 },
                 completedIcon = if (isCompleted) completedGamesRemoveIcon else completedGamesAddIcon,

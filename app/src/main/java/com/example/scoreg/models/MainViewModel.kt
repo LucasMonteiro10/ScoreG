@@ -157,75 +157,10 @@ class MainViewModel : ViewModel() {
     // Variável que representa a lista atual onde o jogo está
     var currentGameList = mutableStateOf<String>("")
 
-    // Função para atualizar currentGameList baseado no currentGame.id
-    private fun updateCurrentGameListBasedOnCurrentGame() {
-        if (::currentGame.isInitialized) {
-            val gameId = currentGame.id // Assume que currentGame tem uma propriedade 'id'
-            if (gameId != null) {
-                updateCurrentGameList(gameId)
-            } else {
-                currentGameList.value = ""
-            }
-        } else {
-            currentGameList.value = ""
-        }
-    }
 
-    // Função que verifica em qual lista do usuário o currentGame está e atualiza currentGameList
-    private fun updateCurrentGameList(gameId: String) {
-        val currentUserId = getCurrentUserId()
-        if (currentUserId != null) {
-            val userRef = getDatabaseReference("users/$currentUserId")
 
-            userRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    // Listas de IDs dos jogos do usuário logado
-                    val completedGames = dataSnapshot.child("completedGames").children.mapNotNull { it.key }
-                    val playingNowGames = dataSnapshot.child("playingNow").children.mapNotNull { it.key }
-                    val wishListGames = dataSnapshot.child("wishList").children.mapNotNull { it.key }
 
-                    // Atualiza o currentGameList com o nome da lista onde o jogo foi encontrado
-                    when (gameId) {
-                        in completedGames -> {
-                            currentGameList.value = "completedGames"
-                        }
-                        in playingNowGames -> {
-                            currentGameList.value = "playingNow"
-                        }
-                        in wishListGames -> {
-                            currentGameList.value = "wishList"
-                        }
-                        else -> {
-                            // O jogo não está em nenhuma lista do usuário
-                            currentGameList.value = ""
-                        }
-                    }
-                }
 
-                override fun onCancelled(databaseError: DatabaseError) {
-                    // Lida com erros, se necessário
-                }
-            })
-        }
-    }
-
-    fun observeGameUpdates(gameId: String) {
-        val gameRef = getDatabaseReference("games/$gameId")
-
-        gameRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val game = dataSnapshot.getValue(Game::class.java)
-                if (game != null) {
-                    // Atualiza o currentGame com o jogo atualizado do Firebase
-                    currentGame = game.copy(id = gameId)
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Lida com erros, se necessário
-            }
-        })
-    }
 
     fun searchGamesByTitle(query: String, callback: (List<Game>) -> Unit) {
         val gamesRef = getDatabaseReference("games")

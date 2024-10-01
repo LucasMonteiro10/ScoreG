@@ -91,75 +91,6 @@ class MainViewModel : ViewModel() {
         })
     }
 
-    var completedGames = mutableStateOf<List<String>>(emptyList())
-        private set
-    var playingNow = mutableStateOf<List<String>>(emptyList())
-        private set
-    var wishList = mutableStateOf<List<String>>(emptyList())
-        private set
-
-    lateinit var currentGame: Game
-        private set
-
-    // Atualiza o currentGame e busca a lista do usuário logado onde o game está
-    fun setCurrentGame(currentGameTemp: Game) {
-        currentGame = currentGameTemp
-        observeUserGameLists() // Observa as listas do usuário ao alterar o currentGame
-    }
-
-    // Função para observar as listas do usuário logado e verificar se o jogo atual está em alguma delas
-    private fun observeUserGameLists() {
-        val currentUserId = getCurrentUserId()
-        if (currentUserId != null) {
-            val userRef = getDatabaseReference("users/$currentUserId")
-
-            userRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    // Atualiza as listas do usuário logado
-                    val completedGamesList =
-                        dataSnapshot.child("completedGames").children.mapNotNull { it.key }
-                    val playingNowList =
-                        dataSnapshot.child("playingNow").children.mapNotNull { it.key }
-                    val wishListGamesList =
-                        dataSnapshot.child("wishList").children.mapNotNull { it.key }
-
-                    // Atualiza as variáveis observáveis
-                    completedGames.value = completedGamesList
-                    playingNow.value = playingNowList
-                    wishList.value = wishListGamesList
-
-                    // Verifica se o currentGame está em alguma dessas listas
-                    updateCurrentGameListBasedOnUserLists(currentGame.id)
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    // Lida com erros
-                }
-            })
-        }
-    }
-
-    // Função para verificar em qual lista o currentGame está e atualizar o estado apropriado
-    private fun updateCurrentGameListBasedOnUserLists(gameId: String) {
-        when (gameId) {
-            in completedGames.value -> {
-                currentGameList.value = "completedGames"
-            }
-            in playingNow.value -> {
-                currentGameList.value = "playingNow"
-            }
-            in wishList.value -> {
-                currentGameList.value = "wishList"
-            }
-            else -> {
-                currentGameList.value = ""
-            }
-        }
-    }
-
-    // Variável que representa a lista atual onde o jogo está
-    var currentGameList = mutableStateOf("")
-
     fun searchGamesByTitle(query: String, callback: (List<Game>) -> Unit) {
         val gamesRef = getDatabaseReference("games")
 
@@ -231,9 +162,11 @@ class MainViewModel : ViewModel() {
                             "completedGames" -> {
                                 currentUserCompletedGamesList.value = completedGamesListTemp
                             }
+
                             "playingNow" -> {
                                 currentUserPlayingNowList.value = completedGamesListTemp
                             }
+
                             "wishList" -> {
                                 currentUserWishList.value = completedGamesListTemp
                             }
@@ -252,6 +185,78 @@ class MainViewModel : ViewModel() {
             }
         })
     }
+
+    var completedGames = mutableStateOf<List<String>>(emptyList())
+        private set
+    var playingNow = mutableStateOf<List<String>>(emptyList())
+        private set
+    var wishList = mutableStateOf<List<String>>(emptyList())
+        private set
+
+    lateinit var currentGame: Game
+        private set
+
+    // Atualiza o currentGame e busca a lista do usuário logado onde o game está
+    fun setCurrentGame(currentGameTemp: Game) {
+        currentGame = currentGameTemp
+        observeUserGameLists() // Observa as listas do usuário ao alterar o currentGame
+    }
+
+    // Função para observar as listas do usuário logado e verificar se o jogo atual está em alguma delas
+    private fun observeUserGameLists() {
+        val currentUserId = getCurrentUserId()
+        if (currentUserId != null) {
+            val userRef = getDatabaseReference("users/$currentUserId")
+
+            userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    // Atualiza as listas do usuário logado
+                    val completedGamesList =
+                        dataSnapshot.child("completedGames").children.mapNotNull { it.key }
+                    val playingNowList =
+                        dataSnapshot.child("playingNow").children.mapNotNull { it.key }
+                    val wishListGamesList =
+                        dataSnapshot.child("wishList").children.mapNotNull { it.key }
+
+                    // Atualiza as variáveis observáveis
+                    completedGames.value = completedGamesList
+                    playingNow.value = playingNowList
+                    wishList.value = wishListGamesList
+
+                    // Verifica se o currentGame está em alguma dessas listas
+                    updateCurrentGameListBasedOnUserLists(currentGame.id)
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // Lida com erros
+                }
+            })
+        }
+    }
+
+    // Função para verificar em qual lista o currentGame está e atualizar o estado apropriado
+    private fun updateCurrentGameListBasedOnUserLists(gameId: String) {
+        when (gameId) {
+            in completedGames.value -> {
+                currentGameList.value = "completedGames"
+            }
+
+            in playingNow.value -> {
+                currentGameList.value = "playingNow"
+            }
+
+            in wishList.value -> {
+                currentGameList.value = "wishList"
+            }
+
+            else -> {
+                currentGameList.value = ""
+            }
+        }
+    }
+
+    // Variável que representa a lista atual onde o jogo está
+    var currentGameList = mutableStateOf("")
 
     fun addGameToCurrentUserList(listName: String) {
         val currentUserId = getCurrentUserId()

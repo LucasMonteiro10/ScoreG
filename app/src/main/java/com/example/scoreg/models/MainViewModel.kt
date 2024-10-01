@@ -362,4 +362,49 @@ class MainViewModel : ViewModel() {
     }
 
 
+
+
+    var completedGames = mutableStateOf<List<String>>(emptyList())
+    var playingNow = mutableStateOf<List<String>>(emptyList())
+    var wishList = mutableStateOf<List<String>>(emptyList())
+
+    // Funções para adicionar e remover jogos
+    fun addGameToList(listType: String, gameId: String) {
+        when (listType) {
+            "completedGames" -> {
+                completedGames.value = completedGames.value + gameId
+            }
+            "playingNow" -> {
+                playingNow.value = playingNow.value + gameId
+            }
+            "wishList" -> {
+                wishList.value = wishList.value + gameId
+            }
+        }
+    }
+
+    fun removeGameFromList(listType: String, gameId: String) {
+        when (listType) {
+            "completedGames" -> {
+                completedGames.value = completedGames.value.filter { it != gameId }
+            }
+            "playingNow" -> {
+                playingNow.value = playingNow.value.filter { it != gameId }
+            }
+            "wishList" -> {
+                wishList.value = wishList.value.filter { it != gameId }
+            }
+        }
+    }
+
+    // Função para verificar se um jogo está na lista
+    fun isGameInList(listType: String, gameId: String): Boolean {
+        return when (listType) {
+            "completedGames" -> completedGames.value.contains(gameId)
+            "playingNow" -> playingNow.value.contains(gameId)
+            "wishList" -> wishList.value.contains(gameId)
+            else -> false
+        }
+    }
+
 }

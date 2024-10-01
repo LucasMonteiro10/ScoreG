@@ -28,9 +28,19 @@ fun GameInfoPage(
     navController: NavController,
     mainViewModel: MainViewModel,
 ) {
-
     val activity = LocalContext.current as? Activity
     val currentGameList = mainViewModel.currentGameList.value // Obtemos o estado da lista atual do jogo
+
+    val gameId = mainViewModel.currentGame.id // Pegue o ID do jogo atual
+
+    // Checa se o jogo está nas listas
+    val isCompleted = mainViewModel.isGameInList("completedGames", gameId)
+    val isPlayingNow = mainViewModel.isGameInList("playingNow", gameId)
+    val isWishListed = mainViewModel.isGameInList("wishList", gameId)
+
+    val completedTextColor = if (isCompleted) Color.Red else Color.Green
+    val playingTextColor = if (isPlayingNow) Color.Red else Color.Green
+    val wishListTextColor = if (isWishListed) Color.Red else Color.Green
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -51,10 +61,6 @@ fun GameInfoPage(
             val green = Color(0xFF25F396)
             val red = Color(0xFFFF0000)
 
-            val completedGamesTextColor = if (currentGameList == "completedGames") red else green
-            val playingNowTextColor = if (currentGameList == "playingNow") red else green
-            val wishListTextColor = if (currentGameList == "wishList") red else green
-
             // Ícones de adicionar/remover para cada estado
             val completedGamesAddIcon = R.drawable.navbar_icon_completedgames_green
             val completedGamesRemoveIcon = R.drawable.navbar_icon_completedgames_red
@@ -63,90 +69,39 @@ fun GameInfoPage(
             val wishListAddIcon = R.drawable.navbar_icon_wishlist_green
             val wishListRemoveIcon = R.drawable.navbar_icon_wishlist_red
 
-            // Adicionando a Row com os botões abaixo do GameView
             ActionButtons(
                 onAddToCompleted = {
-                    //mainViewModel.addGameToCurrentUserList("completedGames")
-                    when (currentGameList) {
-                        "completedGames" -> {
-                            mainViewModel.removeGameToCurrentUserList("completedGames")
-                            Toast.makeText(activity, "Jogo removido da lista 'Jogos Completados'.", Toast.LENGTH_SHORT).show()
-                        }
-                        "playingNow" -> {
-                            Toast.makeText(activity, "Remova o jogo da lista 'Jogando Agora' antes.", Toast.LENGTH_SHORT).show()
-                        }
-                        "wishList" -> {
-                            Toast.makeText(activity, "Remova o jogo da lista 'Lista de Compras' antes.", Toast.LENGTH_SHORT).show()
-                        }
-                        "" -> {
-                            mainViewModel.addGameToCurrentUserList("completedGames")
-                            Toast.makeText(activity, "Jogo adicionado à lista 'Jogos Completados'.", Toast.LENGTH_SHORT).show()
-                        }
-                        else -> {
-                            // Caso não tratado, pode adicionar lógica extra se necessário
-                        }
+                    if (isCompleted) {
+                        mainViewModel.removeGameToCurrentUserList("completedGames")
+                        mainViewModel.removeGameFromList("completedGames", gameId)
+                    } else {
+                        mainViewModel.addGameToCurrentUserList("completedGames")
+                        mainViewModel.addGameToList("completedGames", gameId)
                     }
                 },
                 onAddToPlaying = {
-                    when (currentGameList) {
-                        "completedGames" -> {
-                            Toast.makeText(activity, "Remova o jogo da lista 'Jogos Completados' antes.", Toast.LENGTH_SHORT).show()
-                        }
-                        "playingNow" -> {
-                            mainViewModel.removeGameToCurrentUserList("playingNow")
-                            Toast.makeText(activity, "Jogo removido da lista 'Jogando Agora'.", Toast.LENGTH_SHORT).show()
-                        }
-                        "wishList" -> {
-                            Toast.makeText(activity, "Remova o jogo da lista 'Lista de Compras' antes.", Toast.LENGTH_SHORT).show()
-                        }
-                        "" -> {
-                            mainViewModel.addGameToCurrentUserList("playingNow")
-                            Toast.makeText(activity, "Jogo adiconado à lista 'Jogando Agora'.", Toast.LENGTH_SHORT).show()
-                        }
-                        else -> {
-                            // Caso não tratado, pode adicionar lógica extra se necessário
-                        }
+                    if (isPlayingNow) {
+                        mainViewModel.removeGameToCurrentUserList("playingNow")
+                        mainViewModel.removeGameFromList("playingNow", gameId)
+                    } else {
+                        mainViewModel.addGameToCurrentUserList("playingNow")
+                        mainViewModel.addGameToList("playingNow", gameId)
                     }
                 },
                 onAddToWishlist = {
-                    when (currentGameList) {
-                        "completedGames" -> {
-                            Toast.makeText(activity, "Remova o jogo da lista 'Jogos Completados' antes.", Toast.LENGTH_SHORT).show()
-                        }
-                        "playingNow" -> {
-                            Toast.makeText(activity, "Remova o jogo da lista 'Jogando Agora' antes.", Toast.LENGTH_SHORT).show()
-                        }
-                        "wishList" -> {
-                            mainViewModel.removeGameToCurrentUserList("wishList")
-                            Toast.makeText(activity, "Jogo removido da lista 'Lista de Compras'.", Toast.LENGTH_SHORT).show()
-                        }
-                        "" -> {
-                            mainViewModel.addGameToCurrentUserList("wishList")
-                            Toast.makeText(activity, "Jogo adicionado à lista 'Lista de Compras'.", Toast.LENGTH_SHORT).show()
-                        }
-                        else -> {
-                            // Caso não tratado, pode adicionar lógica extra se necessário
-                        }
+                    if (isWishListed) {
+                        mainViewModel.removeGameToCurrentUserList("wishList")
+                        mainViewModel.removeGameFromList("wishList", gameId)
+                    } else {
+                        mainViewModel.addGameToCurrentUserList("wishList")
+                        mainViewModel.addGameToList("wishList", gameId)
                     }
                 },
-                completedIcon = getIconForAction(
-                    currentList = if (currentGameList == "completedGames") "completedGames" else "",
-                    addIcon = completedGamesAddIcon,
-                    removeIcon = completedGamesRemoveIcon
-                ),
-                playingIcon = getIconForAction(
-                    currentList = if (currentGameList == "playingNow") "playingNow" else "",
-                    addIcon = playingNowAddIcon,
-                    removeIcon = playingNowRemoveIcon
-                ),
-                wishlistIcon = getIconForAction(
-                    currentList = if (currentGameList == "wishList") "wishList" else "",
-                    addIcon = wishListAddIcon,
-                    removeIcon = wishListRemoveIcon
-                ),
-                // Passando as cores de texto apropriadas
-                completedTextColor = completedGamesTextColor,
-                playingTextColor = playingNowTextColor,
+                completedIcon = if (isCompleted) completedGamesRemoveIcon else completedGamesAddIcon,
+                playingIcon = if (isPlayingNow) playingNowRemoveIcon else playingNowAddIcon,
+                wishlistIcon = if (isWishListed) wishListRemoveIcon else wishListAddIcon,
+                completedTextColor = completedTextColor,
+                playingTextColor = playingTextColor,
                 wishlistTextColor = wishListTextColor
             )
         }
@@ -165,13 +120,4 @@ fun GameInfoPage(
                 )
             }
         }
-}
-
-@Composable
-fun getIconForAction(
-    currentList: String,
-    addIcon: Int,
-    removeIcon: Int
-): Int {
-    return if (currentList.isNotEmpty()) removeIcon else addIcon
 }

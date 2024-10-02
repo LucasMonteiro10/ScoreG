@@ -12,8 +12,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.scoreg.components.CustomTopAppBar
 import com.example.scoreg.components.GameListSection
-import com.example.scoreg.components.MainScreen
 import com.example.scoreg.components.Navbar
+import com.example.scoreg.components.SearchGameBar
 import com.example.scoreg.models.MainViewModel
 import com.example.scoreg.utils.IntentUtils
 import com.google.firebase.Firebase
@@ -44,7 +44,7 @@ fun HomePage(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        MainScreen(mainViewModel = mainViewModel, navController = navController)
+        SearchGameBar(mainViewModel = mainViewModel, navController = navController)
 
         Navbar(navController = navController)
 

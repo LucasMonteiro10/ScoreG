@@ -22,30 +22,34 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.scoreg.database.entities.Game
 import com.example.scoreg.models.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(mainViewModel: MainViewModel) {
+fun MainScreen(mainViewModel: MainViewModel, navController: NavController) {
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
-    var items = remember {
-        mutableStateListOf(
-            "O jogo lá",
-            "Outro jogo lá",
-            "Esse sim é o jogo"
-        )
+    var searchResults by remember { mutableStateOf(listOf<Game>()) }
+
+    // Função para chamar a pesquisa e atualizar os resultados
+    fun searchGames(query: String) {
+        mainViewModel.searchGamesByTitle(query) { games ->
+            searchResults = games
+        }
     }
 
+    // Chama a função searchGames quando o texto da pesquisa mudar
     SearchBar(
         modifier = Modifier.fillMaxWidth(),
         query = text,
         onQueryChange = {
             text = it
+            searchGames(it)
         },
         onSearch = {
-            items.add(text)
             active = false
             text = ""
         },
@@ -68,7 +72,6 @@ fun MainScreen(mainViewModel: MainViewModel) {
                         } else {
                             active = false
                         }
-
                     },
                     imageVector = Icons.Default.Close,
                     contentDescription = "Close Icon"
@@ -76,16 +79,25 @@ fun MainScreen(mainViewModel: MainViewModel) {
             }
         }
     ) {
-        items.forEach() {
-            Row(modifier = Modifier.padding(all = 14.dp)) {
+        // Exibe os resultados da pesquisa
+        searchResults.forEach { game ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        // Define o jogo atual e navega para a página de informações do jogo
+                        mainViewModel.setCurrentGame(game)
+                        navController.navigate("gameInfoPage")
+                    }
+                    .padding(all = 14.dp)
+            ) {
                 Icon(
                     modifier = Modifier.padding(end = 10.dp),
                     imageVector = Icons.Default.History,
-                    contentDescription = "Histpry Icon"
+                    contentDescription = "History Icon"
                 )
-                Text(text = it)
+                Text(text = game.title) // Exibe o título do jogo
             }
         }
     }
-
 }

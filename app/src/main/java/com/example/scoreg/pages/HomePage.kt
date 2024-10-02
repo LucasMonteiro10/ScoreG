@@ -19,7 +19,6 @@ import com.example.scoreg.utils.IntentUtils
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(
@@ -45,7 +44,7 @@ fun HomePage(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        MainScreen(mainViewModel = mainViewModel)
+        MainScreen(mainViewModel = mainViewModel, navController = navController)
 
         Navbar(navController = navController)
 

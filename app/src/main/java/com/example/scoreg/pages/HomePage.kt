@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.scoreg.components.CustomTopAppBar
 import com.example.scoreg.components.GameListSection
+import com.example.scoreg.components.MainScreen
 import com.example.scoreg.components.Navbar
 import com.example.scoreg.models.MainViewModel
 import com.example.scoreg.utils.IntentUtils
@@ -29,15 +30,6 @@ fun HomePage(
     mainViewModel.fetchAndSortGames()
     val context = LocalContext.current
 
-    // Método que procura por parte da String do título
-    mainViewModel.searchGamesByTitle("Zelda") { matchingGames ->
-        // Aqui você pode manipular a lista de jogos encontrados
-        for (game in matchingGames) {
-            println("Jogo encontrado: ${game.title}")
-        }
-    }
-
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -50,6 +42,10 @@ fun HomePage(
                 context.startActivity(intent)
             }
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        MainScreen(mainViewModel = mainViewModel)
 
         Navbar(navController = navController)
 
